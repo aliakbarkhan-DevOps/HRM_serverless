@@ -1,16 +1,25 @@
-# React + Vite
+# DevOps Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Standalone React application built with Vite to monitor the health and traffic of the microservices.
+It is completely decoupled from the main HRMS frontend and can be deployed separately to an S3 bucket or CDN.
 
-Currently, two official plugins are available:
+## Dependencies
+- Node.js (v20+)
+- React
+- Lucide React (Icons)
+- Vite
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Environment Variables
+- `VITE_API_BASE_URL`: The URL of the API Gateway or Nginx load balancer to ping. Must include the protocol (e.g., `http://localhost:8000`). Default is `http://localhost:8000`.
 
-## React Compiler
+## How to Run
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Local Development:**
+```bash
+npm install
+npm run dev
+```
+Navigate to the local dev server URL provided by Vite.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Functionality
+The dashboard automatically polls the base endpoints of the microservices (`/auth`, `/employees`, `/attendance`, `/leave`, `/payroll`, `/jobs`, `/performance`) every 30 seconds. It determines health by detecting `502` or `504` errors (indicating container failure) versus any other response (indicating the application is alive).

@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
@@ -77,6 +79,42 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	return events.APIGatewayProxyResponse{StatusCode: 404, Body: `{"error": "Not Found"}`, Headers: headers}, nil
 }
 
+func localHttpHandler(w http.ResponseWriter, r *http.Request) {
+	bodyBytes, _ := io.ReadAll(r.Body)
+	req := events.APIGatewayProxyRequest{
+		HTTPMethod: r.Method,
+		Path:       r.URL.Path,
+		Body:       string(bodyBytes),
+		Headers:    make(map[string]string),
+	}
+	for k, v := range r.Header {
+		if len(v) > 0 {
+			req.Headers[k] = v[0]
+		}
+	}
+	resp, err := handler(context.Background(), req)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	for k, v := range resp.Headers {
+		w.Header().Set(k, v)
+	}
+	w.WriteHeader(resp.StatusCode)
+	w.Write([]byte(resp.Body))
+}
+
 func main() {
-	lambda.Start(handler)
+	if os.Getenv("LOCAL") == "true" {
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "8080"
+		}
+		http.HandleFunc("/", localHttpHandler)
+		log.Printf("Starting local Go server on port %s", port)
+		log.Fatal(http.ListenAndServe(":"+port, nil))
+	} else {
+		lambda.Start(handler)
+	}
 }

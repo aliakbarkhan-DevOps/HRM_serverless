@@ -1,111 +1,37 @@
-# Serverless HR Management System
+# Nexus HRMS (Serverless Architecture)
 
-This is a comprehensive HR Management System (HRMS) built using a microservices architecture. It is designed to be fully serverless, deploying onto AWS Lambda and API Gateway, with a PostgreSQL database on AWS RDS.
+Nexus HRMS is a comprehensive Human Resources Management System built on a highly scalable, serverless microservices architecture. It provides an end-to-end suite of tools for managing employees, attendance, payroll, leave requests, recruitment, and performance reviews.
 
-## Microservices
-1. **Lambda Authorizer (Node.js)**: Validates JWT tokens for API Gateway endpoints.
-2. **Auth Service (Node.js/Express)**: Handles user registration and login. Issues JWTs.
-3. **Employee Service (Node.js/Express)**: Manages employee data (CRUD).
-4. **Attendance Service (Node.js/Express)**: Tracks employee clock-ins and clock-outs.
-5. **Payroll Service (Python/FastAPI)**: Calculates and stores payroll records.
-6. **Leave Service (Java/Plain Handler)**: Manages leave requests.
-7. **Recruitment Service (Java/Plain Handler)**: Manages job postings.
-8. **Performance Service (Golang)**: Tracks performance reviews and scores.
+## Application Functionalities
 
-## Prerequisites
-- Node.js 18.x
-- Python 3.9
-- Java 17 and Maven (if building Java locally)
-- Go 1.x (if building Go locally)
-- Docker & Docker Compose (for local PostgreSQL)
-- AWS CLI configured with appropriate credentials
-- Serverless Framework installed globally (`npm install -g serverless`)
+- **Dashboard**: High-level metrics and recent HR activities.
+- **Employee Management**: Manage employee profiles, records, and organizational structure.
+- **Attendance Tracking**: Clock-in/clock-out functionality with daily logs and late arrival tracking.
+- **Leave Management**: Submit, review, and approve employee leave requests against allocated balances.
+- **Payroll Processing**: Calculate base salary, deductions, and generate downloadable payslips.
+- **Recruitment Pipeline**: Post job openings, track applicant numbers, and manage hiring statuses.
+- **Performance Reviews**: Schedule evaluations, record metrics, and track company-wide performance averages.
+- **DevOps Monitoring**: Real-time dashboard tracking the uptime and latency of all underlying microservices.
 
-## Local Testing
+## Microservices Architecture
 
-### 1. Start the Database
-Use Docker Compose to spin up a local PostgreSQL database with the required schema initialized:
-```bash
-docker-compose up -d
-```
-*Note: The `db/init.sql` file is automatically executed on the first run to create all tables.*
+The backend is composed of polyglot microservices, designed to run as AWS Lambda functions in production and as containerized HTTP servers for local development.
 
-### 2. Required Secrets / Environment Variables
-Each microservice uses the following environment variables (defined in their respective `serverless.yml` files, falling back to these defaults):
+1. **Auth Service** *(Node.js)*: Handles user login, registration, and issues JWT tokens.
+2. **Employee Service** *(Node.js)*: Manages core employee data and profiles.
+3. **Attendance Service** *(Node.js)*: Records daily clock-ins and clock-outs.
+4. **Payroll Service** *(Python/FastAPI)*: Calculates deductions, taxes, and generates payslips.
+5. **Leave Service** *(Java 17/Maven)*: Manages leave workflows, balances, and approvals.
+6. **Recruitment Service** *(Java 17/Maven)*: Handles job postings and applicant tracking.
+7. **Performance Service** *(Go)*: Records and tracks employee performance evaluations.
+8. **Lambda Authorizer** *(Node.js)*: An API Gateway authorizer that intercepts requests and validates JWT tokens before allowing access to the internal services.
 
-```env
-DB_HOST=localhost
-DB_NAME=hrm_db
-DB_USER=hrm_user
-DB_PASSWORD=hrm_password
-JWT_SECRET=fallback_secret
-```
-*In a production environment, you must store these in AWS Secrets Manager and inject them during deployment or runtime.*
+## User Interfaces
 
-### 3. Run Services Locally
-**Node.js Services (Auth, Employee, Attendance):**
-```bash
-cd services/auth-service
-npm install
-serverless offline
-```
-*This will start a local API Gateway emulator at `http://localhost:3000`.*
+- **Frontend (`/frontend`)**: The primary React (Vite) application used by HR administrators and employees. Features a modern, glassmorphism-inspired dark mode UI.
+- **DevOps Dashboard (`/devops-dashboard`)**: A standalone React (Vite) application designed for system administrators to monitor the health, uptime, and latency of the microservices.
 
-**Python Service (Payroll):**
-```bash
-cd services/payroll-service
-pip install -r requirements.txt
-serverless plugin install -n serverless-python-requirements
-serverless offline
-```
+## Documentation
 
-## Deployment to AWS
-
-To deploy the services to AWS Lambda, navigate to each service directory and use the Serverless Framework.
-
-1. **Deploy Node.js Services:**
-```bash
-cd services/auth-service
-serverless deploy
-```
-
-2. **Deploy Python Service:**
-```bash
-cd services/payroll-service
-serverless deploy
-```
-
-3. **Deploy Java Services:**
-```bash
-cd services/leave-service
-mvn clean package
-serverless deploy
-```
-
-4. **Deploy Go Service:**
-```bash
-cd services/performance-service
-GOOS=linux GOARCH=amd64 go build -o bin/performance main.go
-serverless deploy
-```
-
-## Frontend (ReactJS)
-
-The frontend is built with React and Vite.
-
-### Local Development
-```bash
-cd frontend
-npm run dev
-```
-
-### Deployment to S3
-1. Build the production bundle:
-```bash
-cd frontend
-npm run build
-```
-2. Sync the `dist/` directory to your S3 bucket configured for static website hosting:
-```bash
-aws s3 sync dist/ s3://your-hrm-frontend-bucket-name
-```
+- See **[LOCAL_TESTING.md](./LOCAL_TESTING.md)** for instructions on running the entire stack locally using Docker Compose.
+- See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for instructions on deploying the application to AWS.

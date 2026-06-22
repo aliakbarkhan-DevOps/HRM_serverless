@@ -50,3 +50,9 @@ app.get('/attendance/employee/:id', async (req, res) => {
 });
 
 module.exports.handler = serverless(app);
+
+if (require.main === module || process.env.LOCAL === 'true') {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`Attendance service running on port ${port}`));
+}
+

@@ -46,3 +46,9 @@ app.get('/employees/:id', async (req, res) => {
 });
 
 module.exports.handler = serverless(app);
+
+if (require.main === module || process.env.LOCAL === 'true') {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`Employee service running on port ${port}`));
+}
+

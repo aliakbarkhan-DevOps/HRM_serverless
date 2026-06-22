@@ -1,16 +1,27 @@
-# React + Vite
+# HRMS Main Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React application built with Vite for the main Human Resources Management System UI.
 
-Currently, two official plugins are available:
+## Dependencies
+- Node.js (v20+)
+- React
+- React Router DOM
+- Lucide React (Icons)
+- Vite
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Environment Variables
+- `VITE_API_BASE_URL`: Base URL for the API. When running in docker behind Nginx, this is typically not needed because requests are proxied via `/`. If running standalone, set it to the API gateway (e.g., `http://localhost:8000`).
 
-## React Compiler
+## How to Run
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Local Development:**
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+**Docker:**
+Service name `frontend`. Runs on port 5173 inside docker, proxied to `http://localhost:8000/` by Nginx.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Functionality
+Provides the main application dashboard, employee management, attendance tracking, leave requests, payroll overviews, and performance reviews.

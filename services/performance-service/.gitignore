@@ -1,0 +1,4 @@
+performance-service
+*.exe
+.env
+.DS_Store

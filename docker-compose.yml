@@ -14,6 +14,145 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
+    networks:
+      - hrm_network
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: hrm_auth_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      JWT_SECRET: fallback_secret
+      PORT: 3001
+      LOCAL: "true"
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  employee-service:
+    build: ./services/employee-service
+    container_name: hrm_employee_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      PORT: 3002
+      LOCAL: "true"
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  attendance-service:
+    build: ./services/attendance-service
+    container_name: hrm_attendance_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      PORT: 3003
+      LOCAL: "true"
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  payroll-service:
+    build: ./services/payroll-service
+    container_name: hrm_payroll_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      PORT: 3004
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  leave-service:
+    build: ./services/leave-service
+    container_name: hrm_leave_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      PORT: 3005
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  recruitment-service:
+    build: ./services/recruitment-service
+    container_name: hrm_recruitment_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      PORT: 3006
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  performance-service:
+    build: ./services/performance-service
+    container_name: hrm_performance_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hrm_db
+      DB_USER: hrm_user
+      DB_PASSWORD: hrm_password
+      PORT: 3007
+      LOCAL: "true"
+    depends_on:
+      - postgres
+    networks:
+      - hrm_network
+
+  frontend:
+    build: ./frontend
+    container_name: hrm_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    networks:
+      - hrm_network
+
+  gateway:
+    image: nginx:alpine
+    container_name: hrm_gateway
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8000:80"
+    depends_on:
+      - auth-service
+      - employee-service
+      - attendance-service
+      - payroll-service
+      - leave-service
+      - recruitment-service
+      - performance-service
+      - frontend
+    networks:
+      - hrm_network
 
 volumes:
   postgres_data:
+
+networks:
+  hrm_network:
+    driver: bridge

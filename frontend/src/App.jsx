@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Calendar, Briefcase, DollarSign, Target, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Briefcase, DollarSign, Target, Star, Activity, LogOut } from 'lucide-react';
+
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Login from './pages/Login';
+import Attendance from './pages/Attendance';
+import Leave from './pages/Leave';
+import Payroll from './pages/Payroll';
+import Recruitment from './pages/Recruitment';
+import Performance from './pages/Performance';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -19,6 +25,7 @@ const Sidebar = () => {
     { path: '/leave', label: 'Leave', icon: <Briefcase size={20} /> },
     { path: '/payroll', label: 'Payroll', icon: <DollarSign size={20} /> },
     { path: '/recruitment', label: 'Recruitment', icon: <Target size={20} /> },
+    { path: '/performance', label: 'Performance', icon: <Star size={20} /> },
   ];
 
   return (
@@ -93,11 +100,11 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/employees" element={<Employees />} />
-                {/* Add placeholders for other routes */}
-                <Route path="/attendance" element={<div><h2>Attendance Module</h2><p>Coming soon...</p></div>} />
-                <Route path="/leave" element={<div><h2>Leave Module</h2><p>Coming soon...</p></div>} />
-                <Route path="/payroll" element={<div><h2>Payroll Module</h2><p>Coming soon...</p></div>} />
-                <Route path="/recruitment" element={<div><h2>Recruitment Module</h2><p>Coming soon...</p></div>} />
+                <Route path="/attendance" element={<Attendance />} />
+                <Route path="/leave" element={<Leave />} />
+                <Route path="/payroll" element={<Payroll />} />
+                <Route path="/recruitment" element={<Recruitment />} />
+                <Route path="/performance" element={<Performance />} />
               </Routes>
             </Layout>
           </PrivateRoute>

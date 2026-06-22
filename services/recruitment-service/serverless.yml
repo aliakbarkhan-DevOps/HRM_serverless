@@ -1,0 +1,27 @@
+service: recruitment-service
+
+provider:
+  name: aws
+  runtime: java17
+  region: us-east-1
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_NAME: ${env:DB_NAME, 'hrm_db'}
+    DB_USER: ${env:DB_USER, 'hrm_user'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'hrm_password'}
+
+package:
+  artifact: target/recruitment-service-1.0-SNAPSHOT.jar
+
+functions:
+  recruitmentApp:
+    handler: com.hrm.recruitment.RecruitmentHandler
+    events:
+      - http:
+          path: /jobs/{proxy+}
+          method: any
+          cors: true
+      - http:
+          path: /jobs
+          method: any
+          cors: true

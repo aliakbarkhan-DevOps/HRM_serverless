@@ -1,0 +1,29 @@
+service: performance-service
+
+provider:
+  name: aws
+  runtime: go1.x
+  region: us-east-1
+  environment:
+    DB_HOST: ${env:DB_HOST, 'localhost'}
+    DB_NAME: ${env:DB_NAME, 'hrm_db'}
+    DB_USER: ${env:DB_USER, 'hrm_user'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'hrm_password'}
+
+package:
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+functions:
+  performanceApp:
+    handler: bin/performance
+    events:
+      - http:
+          path: /performance/{proxy+}
+          method: any
+          cors: true
+      - http:
+          path: /performance
+          method: any
+          cors: true

@@ -1,0 +1,12 @@
+service: lambda-authorizer
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  environment:
+    JWT_SECRET: ${env:JWT_SECRET, 'fallback_secret'}
+
+functions:
+  authorize:
+    handler: index.handler

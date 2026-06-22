@@ -1,0 +1,6 @@
+fastapi
+mangum
+psycopg2-binary
+uvicorn
+python-dotenv
+boto3
